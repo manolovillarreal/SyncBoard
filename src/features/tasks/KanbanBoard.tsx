@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Task, TaskStatus, ProjectMember } from '../../types/database.types';
 import { KanbanColumn } from './KanbanColumn';
@@ -16,6 +16,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const lastFetchAtRef = useRef<number | null>(null);
 
   // Filters
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
@@ -27,6 +28,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   const [modalDefaultStatus, setModalDefaultStatus] = useState<TaskStatus>('pending');
 
   const fetchTasks = useCallback(async () => {
+    lastFetchAtRef.current = Date.now();
+
     try {
       setErrorMsg(null);
       const { data, error } = await supabase
@@ -44,6 +47,22 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
       setLoading(false);
     }
   }, [projectId]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return;
+
+      const lastFetchAt = lastFetchAtRef.current;
+      if (lastFetchAt !== null && Date.now() - lastFetchAt < 5000) return;
+
+      fetchTasks();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchTasks]);
 
   useEffect(() => {
     fetchTasks();

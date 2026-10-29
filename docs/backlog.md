@@ -62,7 +62,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T18** | Botón de reintento ante error de carga en historial de actividad | Ajuste | Baja | [Issue #18](https://github.com/manolovillarreal/SyncBoard/issues/18) | Sebastian Pedroza Gallardo |
 | **T19** | Indicador de estado de conexión Supabase Realtime en Navbar | Mejora | Media-baja | [Issue #19](https://github.com/manolovillarreal/SyncBoard/issues/19) | Felipe Gonzalez Tovar |
 | **T20** | Manejo de evento DELETE en canal Realtime de actividad | Mejora | Baja | [Issue #20](https://github.com/manolovillarreal/SyncBoard/issues/20) | Thomas Hoyos Carmona |
-| **T21** | Resincronización automática de tareas al recuperar foco de ventana | Ajuste | Baja | [Issue #21](https://github.com/manolovillarreal/SyncBoard/issues/21) | Thomas Hoyos Carmona |
+| **T21** | Resincronización automática de tareas al recuperar foco de ventana | Ajuste | Baja | [Issue #21](https://github.com/manolovillarreal/SyncBoard/issues/21) | Thomas Hoyos Carmona — Completada |
 | **T22** | Resaltado visual transitorio de tarjeta actualizada vía Realtime | Mejora | Media-baja | [Issue #22](https://github.com/manolovillarreal/SyncBoard/issues/22) | Esteban Puerta Mejia |
 | **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo |
 | **T24** | Detección y notificación limpia de sesión expirada | Mejora | Baja | [Issue #24](https://github.com/manolovillarreal/SyncBoard/issues/24) | Esteban Puerta Mejia |

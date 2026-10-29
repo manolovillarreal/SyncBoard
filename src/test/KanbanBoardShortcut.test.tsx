@@ -121,3 +121,55 @@ describe('KanbanBoard Keyboard Shortcut (N) - Issue #41', () => {
     removeEventListenerSpy.mockRestore();
   });
 });
+
+describe('KanbanBoard visibility synchronization - Issue #21', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockOrder.mockResolvedValue({ data: [], error: null });
+  });
+
+  it('refetches tasks when the document becomes visible after the throttle window', async () => {
+    const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(1000);
+    const { unmount } = render(<KanbanBoard projectId="proj-1" members={mockMembers} />);
+
+    await waitFor(() => {
+      expect(mockOrder).toHaveBeenCalledTimes(1);
+    });
+
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'visible',
+    });
+    nowSpy.mockReturnValue(6001);
+    fireEvent(document, new Event('visibilitychange'));
+
+    await waitFor(() => {
+      expect(mockOrder).toHaveBeenCalledTimes(2);
+    });
+
+    unmount();
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'visibilitychange',
+      expect.any(Function)
+    );
+    removeEventListenerSpy.mockRestore();
+    nowSpy.mockRestore();
+  });
+
+  it('does not refetch tasks when the document becomes visible within five seconds', async () => {
+    render(<KanbanBoard projectId="proj-1" members={mockMembers} />);
+
+    await waitFor(() => {
+      expect(mockOrder).toHaveBeenCalledTimes(1);
+    });
+
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'visible',
+    });
+    fireEvent(document, new Event('visibilitychange'));
+
+    expect(mockOrder).toHaveBeenCalledTimes(1);
+  });
+});
