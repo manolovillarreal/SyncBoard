@@ -61,7 +61,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T17** | Validación estricta de sintaxis de correo antes de invitar | Ajuste | Baja | [Issue #17](https://github.com/manolovillarreal/SyncBoard/issues/17) | Sergio Nicolas Fonseca Nino |
 | **T18** | Botón de reintento ante error de carga en historial de actividad | Ajuste | Baja | [Issue #18](https://github.com/manolovillarreal/SyncBoard/issues/18) | Sebastian Pedroza Gallardo |
 | **T19** | Indicador de estado de conexión Supabase Realtime en Navbar | Mejora | Media-baja | [Issue #19](https://github.com/manolovillarreal/SyncBoard/issues/19) | Felipe Gonzalez Tovar |
-| **T20** | Manejo de evento DELETE en canal Realtime de actividad | Mejora | Baja | [Issue #20](https://github.com/manolovillarreal/SyncBoard/issues/20) | Thomas Hoyos Carmona |
+| **T20** | Manejo de evento DELETE en canal Realtime de actividad | Mejora | Baja | [Issue #20](https://github.com/manolovillarreal/SyncBoard/issues/20) | Thomas Hoyos Carmona — **Estado: Completada** |
 | **T21** | Resincronización automática de tareas al recuperar foco de ventana | Ajuste | Baja | [Issue #21](https://github.com/manolovillarreal/SyncBoard/issues/21) | Thomas Hoyos Carmona |
 | **T22** | Resaltado visual transitorio de tarjeta actualizada vía Realtime | Mejora | Media-baja | [Issue #22](https://github.com/manolovillarreal/SyncBoard/issues/22) | Esteban Puerta Mejia |
 | **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo |

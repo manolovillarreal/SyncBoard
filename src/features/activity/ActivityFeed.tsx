@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ActivityLog } from '../../types/database.types';
 import { formatDateTime, formatStatus } from '../../lib/formatters';
@@ -7,8 +7,11 @@ import { Clock, PlusCircle, CheckCircle2, UserCheck, Trash2, Edit3, Mail } from 
 export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const requestVersion = useRef(0);
 
   const fetchLogs = async () => {
+    const currentRequestVersion = ++requestVersion.current;
+
     try {
       const { data, error } = await supabase
         .from('activity_log')
@@ -26,6 +29,10 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
         .order('created_at', { ascending: false })
         .limit(50);
 
+      if (currentRequestVersion !== requestVersion.current) {
+        return;
+      }
+
       if (!error && data) {
         setLogs(data as any);
       } else {
@@ -36,6 +43,10 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
           .order('created_at', { ascending: false })
           .limit(50);
 
+        if (currentRequestVersion !== requestVersion.current) {
+          return;
+        }
+
         if (simpleLogs && simpleLogs.length > 0) {
           const actorIds = Array.from(new Set(simpleLogs.map((l: any) => l.actor_id).filter(Boolean)));
           const { data: profs } = await supabase
@@ -44,6 +55,10 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
             .in('id', actorIds);
 
           const profMap = new Map((profs || []).map((p: any) => [p.id, p]));
+          if (currentRequestVersion !== requestVersion.current) {
+            return;
+          }
+
           setLogs(
             simpleLogs.map((l: any) => ({
               ...l,
@@ -57,7 +72,9 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
     } catch (err) {
       console.error('Error cargando actividad:', err);
     } finally {
-      setLoading(false);
+      if (currentRequestVersion === requestVersion.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -70,12 +87,18 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'activity_log',
           filter: `project_id=eq.${projectId}`,
         },
-        () => {
+        (payload) => {
+          if (payload.eventType === 'DELETE') {
+            requestVersion.current += 1;
+            setLogs((currentLogs) => currentLogs.filter((log) => log.id !== payload.old.id));
+            return;
+          }
+
           fetchLogs();
         }
       )
