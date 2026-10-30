@@ -4,7 +4,7 @@ import { Task, TaskStatus, ProjectMember } from '../../types/database.types';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskModal } from './TaskModal';
 import { useAuth } from '../auth/AuthContext';
-import { Filter, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { Filter, AlertCircle, RefreshCw, Plus, User } from 'lucide-react';
 
 interface KanbanBoardProps {
   projectId: string;
@@ -20,6 +20,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   // Filters
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [myTasksOnly, setMyTasksOnly] = useState(false);
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -175,8 +176,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
     setModalOpen(true);
   };
 
+  // Contador de tareas asignadas al usuario actual (sin depender de otros filtros)
+  const myTasksCount = tasks.filter((t) => t.assignee_id === user?.id).length;
+
   // Filter logic
   const filteredTasks = tasks.filter((task) => {
+    if (myTasksOnly && task.assignee_id !== user?.id) return false;
     if (assigneeFilter !== 'all') {
       if (assigneeFilter === 'unassigned' && task.assignee_id !== null) return false;
       if (assigneeFilter !== 'unassigned' && task.assignee_id !== assigneeFilter) return false;
@@ -232,11 +237,29 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
             </select>
           </div>
 
-          {(assigneeFilter !== 'all' || priorityFilter !== 'all') && (
+          {/* Filtro rápido: Mis Tareas */}
+          <button
+            type="button"
+            onClick={() => setMyTasksOnly((prev) => !prev)}
+            aria-pressed={myTasksOnly}
+            className={`inline-flex items-center gap-1.5 text-xs border rounded-lg px-2.5 py-1.5 font-medium transition focus:outline-none focus:ring-1 focus:ring-teal-500 ${
+              myTasksOnly
+                ? 'bg-teal-600 border-teal-600 text-white'
+                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+            }`}
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>
+              Mis tareas (<span data-testid="my-tasks-count">{myTasksCount}</span>)
+            </span>
+          </button>
+
+          {(assigneeFilter !== 'all' || priorityFilter !== 'all' || myTasksOnly) && (
             <button
               onClick={() => {
                 setAssigneeFilter('all');
                 setPriorityFilter('all');
+                setMyTasksOnly(false);
               }}
               className="text-xs text-teal-600 hover:text-teal-700 font-semibold underline px-1"
             >
