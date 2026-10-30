@@ -57,6 +57,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Si el propietario es el único integrante, se sugiere invitar colaboradores.
+  const isSoloProject = members.length === 1;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -221,6 +224,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               <select
                 value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
+                aria-describedby={isSoloProject ? 'assignee-solo-hint' : undefined}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-white"
               >
                 <option value="">Sin asignar</option>
@@ -233,6 +237,11 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   );
                 })}
               </select>
+              {isSoloProject && (
+                <p id="assignee-solo-hint" className="mt-1.5 text-[11px] leading-snug text-slate-500">
+                  Aún no hay más integrantes en el equipo. Puedes invitar colaboradores desde la configuración.
+                </p>
+              )}
             </div>
 
             <div>
