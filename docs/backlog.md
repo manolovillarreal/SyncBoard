@@ -70,7 +70,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T26** | Pruebas unitarias exhaustivas de validadores de entrada | Ajuste | Baja | [Issue #26](https://github.com/manolovillarreal/SyncBoard/issues/26) | Santiago Velasco Mosquero |
 | **T27** | Prueba de componente para la columna Kanban con Testing Library | Mejora | Media-baja | [Issue #27](https://github.com/manolovillarreal/SyncBoard/issues/27) | Felipe Gonzalez Tovar |
 | **T28** | Prueba de componente para validación del modal de tareas | Mejora | Media-baja | [Issue #28](https://github.com/manolovillarreal/SyncBoard/issues/28) | Juan Fernando Melo Areiza |
-| **T29** | Prueba de componente para la lista de proyectos y estado vacío | Mejora | Baja | [Issue #29](https://github.com/manolovillarreal/SyncBoard/issues/29) | Santiago Velasco Mosquero |
+| **T29** | Prueba de componente para la lista de proyectos y estado vacío | Mejora | Baja | [Issue #29](https://github.com/manolovillarreal/SyncBoard/issues/29) | Santiago Velasco Mosquero — *En revisión* |
 | **T30** | Verificación estricta de tipos TypeScript en modelos de datos | Ajuste | Baja | [Issue #30](https://github.com/manolovillarreal/SyncBoard/issues/30) | Juan Sebastian Lopez Martinez |
 | **T31** | Atajo de teclado Ctrl+Enter para guardar tareas en modal | Ajuste | Baja | [Issue #31](https://github.com/manolovillarreal/SyncBoard/issues/31) | Jakeline Avila Verbel |
 | **T32** | Avatar con iniciales y color determinista para integrantes | Ajuste | Baja | [Issue #32](https://github.com/manolovillarreal/SyncBoard/issues/32) | Jose Trujillo |
