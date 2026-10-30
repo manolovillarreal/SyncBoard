@@ -4,6 +4,8 @@ import { Task, TaskStatus, ProjectMember } from '../../types/database.types';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskModal } from './TaskModal';
 import { useAuth } from '../auth/AuthContext';
+import { Toast, ToastType } from '../../components/Toast';
+import { formatStatus } from '../../lib/formatters';
 import { Filter, AlertCircle, RefreshCw, Plus } from 'lucide-react';
 
 interface KanbanBoardProps {
@@ -25,6 +27,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [modalDefaultStatus, setModalDefaultStatus] = useState<TaskStatus>('pending');
+
+  // Toast de retroalimentación al mover tareas
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -94,8 +100,13 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
 
       if (error) throw error;
 
-      // Log activity
       const task = tasks.find((t) => t.id === taskId);
+      setToast({
+        type: 'success',
+        message: `Tarea "${task?.title || 'Tarea'}" movida a ${formatStatus(newStatus)}.`,
+      });
+
+      // Log activity
       await supabase.from('activity_log').insert({
         project_id: projectId,
         actor_id: user?.id,
@@ -109,7 +120,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
     } catch (err: any) {
       // Rollback on failure
       setTasks(originalTasks);
-      setErrorMsg(err.message || 'Error al actualizar el estado de la tarea.');
+      setToast({
+        type: 'error',
+        message: `No se pudo mover la tarea: ${err?.message || 'error desconocido al actualizar el estado.'}`,
+      });
     }
   };
 
@@ -318,6 +332,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
           />
         </div>
       )}
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
 
       {/* Modal para Crear/Editar Tarea */}
       <TaskModal
