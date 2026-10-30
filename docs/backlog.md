@@ -59,7 +59,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T15** | Sanitización y recorte de espacios múltiples en nombres y títulos | Ajuste | Baja | [Issue #15](https://github.com/manolovillarreal/SyncBoard/issues/15) | Esteban Puerta Mejia |
 | **T16** | Modal de confirmación accesible al remover integrantes del equipo | Mejora | Baja | [Issue #16](https://github.com/manolovillarreal/SyncBoard/issues/16) | Jakeline Avila Verbel |
 | **T17** | Validación estricta de sintaxis de correo antes de invitar | Ajuste | Baja | [Issue #17](https://github.com/manolovillarreal/SyncBoard/issues/17) | Sergio Nicolas Fonseca Nino |
-| **T18** | Botón de reintento ante error de carga en historial de actividad | Ajuste | Baja | [Issue #18](https://github.com/manolovillarreal/SyncBoard/issues/18) | Sebastian Pedroza Gallardo |
+| **T18** | Botón de reintento ante error de carga en historial de actividad | Ajuste | Baja | [Issue #18](https://github.com/manolovillarreal/SyncBoard/issues/18) | Sebastian Pedroza Gallardo — *En revisión (PR pendiente)* |
 | **T19** | Indicador de estado de conexión Supabase Realtime en Navbar | Mejora | Media-baja | [Issue #19](https://github.com/manolovillarreal/SyncBoard/issues/19) | Felipe Gonzalez Tovar |
 | **T20** | Manejo de evento DELETE en canal Realtime de actividad | Mejora | Baja | [Issue #20](https://github.com/manolovillarreal/SyncBoard/issues/20) | Thomas Hoyos Carmona |
 | **T21** | Resincronización automática de tareas al recuperar foco de ventana | Ajuste | Baja | [Issue #21](https://github.com/manolovillarreal/SyncBoard/issues/21) | Thomas Hoyos Carmona |
