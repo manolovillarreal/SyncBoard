@@ -4,7 +4,7 @@ import { Task, TaskStatus, ProjectMember } from '../../types/database.types';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskModal } from './TaskModal';
 import { useAuth } from '../auth/AuthContext';
-import { Filter, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { Filter, AlertCircle, RefreshCw, Plus, Search, X } from 'lucide-react';
 
 interface KanbanBoardProps {
   projectId: string;
@@ -20,6 +20,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   // Filters
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -176,7 +177,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   };
 
   // Filter logic
+  const normalizedSearch = searchQuery.trim().toLowerCase();
   const filteredTasks = tasks.filter((task) => {
+    if (normalizedSearch && !task.title.toLowerCase().includes(normalizedSearch)) return false;
     if (assigneeFilter !== 'all') {
       if (assigneeFilter === 'unassigned' && task.assignee_id !== null) return false;
       if (assigneeFilter !== 'unassigned' && task.assignee_id !== assigneeFilter) return false;
@@ -199,6 +202,30 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
             <Filter className="w-3.5 h-3.5" />
             <span>Filtros:</span>
+          </div>
+
+          {/* Búsqueda por texto en el título */}
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por título..."
+              aria-label="Buscar tareas por título"
+              className="text-xs bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-7 py-1.5 text-slate-700 font-medium w-48 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            />
+            {searchQuery !== '' && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Limpiar búsqueda"
+                title="Limpiar búsqueda"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded transition"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Filtro por Responsable */}
@@ -232,11 +259,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
             </select>
           </div>
 
-          {(assigneeFilter !== 'all' || priorityFilter !== 'all') && (
+          {(assigneeFilter !== 'all' || priorityFilter !== 'all' || searchQuery !== '') && (
             <button
               onClick={() => {
                 setAssigneeFilter('all');
                 setPriorityFilter('all');
+                setSearchQuery('');
               }}
               className="text-xs text-teal-600 hover:text-teal-700 font-semibold underline px-1"
             >
