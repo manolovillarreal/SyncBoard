@@ -23,10 +23,21 @@ export const validateProjectInput = (name: string): { valid: boolean; error?: st
   return { valid: true };
 };
 
+export const getTodayDateString = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const validateTaskInput = (
   title: string,
   status: string,
-  priority: string
+  priority: string,
+  dueDate?: string | null,
+  isEditing?: boolean,
+  initialDueDate?: string | null
 ): { valid: boolean; error?: string } => {
   const trimmed = title.trim();
   if (!trimmed) {
@@ -49,11 +60,21 @@ export const validateTaskInput = (
     return { valid: false, error: 'Prioridad de tarea inválida.' };
   }
 
-  return { valid: true };
+  if (dueDate && dueDate.trim()) {
+    const today = getTodayDateString();
+    const normalizedDueDate = dueDate.trim().split('T')[0];
+    if (normalizedDueDate < today) {
+      const normalizedInitial = initialDueDate ? initialDueDate.trim().split('T')[0] : null;
+      const isPreservingInitial = isEditing && normalizedInitial && normalizedDueDate === normalizedInitial;
+      if (!isPreservingInitial) {
+        return { valid: false, error: 'La fecha límite no puede ser anterior al día de hoy' };
+      }
+    }
+  }
 
-  
+  return { valid: true };
 };
 
 export const sanitizeTitle = (text: string): string => {
-    return text.replace(/\s+/g, ' ').trim();
+  return text.replace(/\s+/g, ' ').trim();
 };
