@@ -4,7 +4,7 @@ import { Task, TaskStatus, ProjectMember } from '../../types/database.types';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskModal } from './TaskModal';
 import { useAuth } from '../auth/AuthContext';
-import { Filter, AlertCircle, RefreshCw, Plus, Search } from 'lucide-react';
+import { Filter, AlertCircle, RefreshCw, Plus, Search, X } from 'lucide-react';
 
 interface KanbanBoardProps {
   projectId: string;
@@ -213,8 +213,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar por título..."
               aria-label="Buscar tareas por título"
-              className="text-xs bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-2.5 py-1.5 text-slate-700 font-medium w-44 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="text-xs bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-7 py-1.5 text-slate-700 font-medium w-48 focus:outline-none focus:ring-1 focus:ring-teal-500"
             />
+            {searchQuery !== '' && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Limpiar búsqueda"
+                title="Limpiar búsqueda"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded transition"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Filtro por Responsable */}

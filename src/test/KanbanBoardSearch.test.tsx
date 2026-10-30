@@ -46,9 +46,9 @@ const buildTask = (overrides: Partial<Task>): Task => ({
 });
 
 const mockTasks: Task[] = [
-  buildTask({ id: 't1', title: 'Diseñar esquema relacional', status: 'pending' }),
+  buildTask({ id: 't1', title: 'Diseñar esquema relacional', status: 'pending', priority: 'high' }),
   buildTask({ id: 't2', title: 'Implementar login', status: 'in_progress' }),
-  buildTask({ id: 't3', title: 'Revisión del DISEÑO de la interfaz', status: 'completed' }),
+  buildTask({ id: 't3', title: 'Revisión del DISEÑO de la interfaz', status: 'completed', priority: 'low' }),
 ];
 
 const mockMembers: ProjectMember[] = [
@@ -126,5 +126,56 @@ describe('KanbanBoard - Filtro de búsqueda por texto en títulos - Issue #4', (
     expect(screen.getByText('Diseñar esquema relacional')).toBeInTheDocument();
     expect(screen.getByText('Revisión del DISEÑO de la interfaz')).toBeInTheDocument();
     expect(screen.queryByText(/limpiar filtros/i)).not.toBeInTheDocument();
+  });
+
+  it('muestra un botón que limpia el texto de búsqueda con un solo clic', async () => {
+    render(<KanbanBoard projectId="proj-1" members={mockMembers} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Implementar login')).toBeInTheDocument();
+    });
+
+    // Sin texto no hay botón de limpiar
+    expect(screen.queryByRole('button', { name: /limpiar búsqueda/i })).not.toBeInTheDocument();
+
+    const input = screen.getByLabelText(/buscar tareas por título/i) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'login' } });
+    expect(screen.queryByText('Diseñar esquema relacional')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /limpiar búsqueda/i }));
+
+    expect(input.value).toBe('');
+    expect(screen.getByText('Diseñar esquema relacional')).toBeInTheDocument();
+    expect(screen.getByText('Implementar login')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /limpiar búsqueda/i })).not.toBeInTheDocument();
+  });
+
+  it('se combina con el filtro de prioridad y al vaciar el input se restablecen las tareas que cumplen los demás filtros', async () => {
+    render(<KanbanBoard projectId="proj-1" members={mockMembers} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Implementar login')).toBeInTheDocument();
+    });
+
+    const prioritySelect = (screen.getAllByRole('combobox') as HTMLSelectElement[]).find((select) =>
+      Array.from(select.options).some((opt) => opt.value === 'high')
+    ) as HTMLSelectElement;
+    fireEvent.change(prioritySelect, { target: { value: 'high' } });
+
+    // Solo la tarea de prioridad alta
+    expect(screen.getByText('Diseñar esquema relacional')).toBeInTheDocument();
+    expect(screen.queryByText('Revisión del DISEÑO de la interfaz')).not.toBeInTheDocument();
+
+    // Búsqueda + prioridad: "diseñ" coincide con dos títulos, pero solo uno es de prioridad alta
+    const input = screen.getByLabelText(/buscar tareas por título/i) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'diseñ' } });
+    expect(screen.getByText('Diseñar esquema relacional')).toBeInTheDocument();
+    expect(screen.queryByText('Revisión del DISEÑO de la interfaz')).not.toBeInTheDocument();
+
+    // Al vaciar el input se restablece lo que cumple el filtro de prioridad (no todas las tareas)
+    fireEvent.change(input, { target: { value: '' } });
+    expect(screen.getByText('Diseñar esquema relacional')).toBeInTheDocument();
+    expect(screen.queryByText('Implementar login')).not.toBeInTheDocument();
+    expect(screen.queryByText('Revisión del DISEÑO de la interfaz')).not.toBeInTheDocument();
   });
 });
