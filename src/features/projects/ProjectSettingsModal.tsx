@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Project, ProjectMember } from '../../types/database.types';
+import { Project, ProjectMember, ProfileSummary } from '../../types/database.types';
 import { useAuth } from '../auth/AuthContext';
 import { X, Settings, Users, Trash2, AlertTriangle, UserMinus } from 'lucide-react';
 
@@ -57,18 +57,18 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
           .eq('project_id', project.id);
 
         if (simpleMem && simpleMem.length > 0) {
-          const userIds = simpleMem.map((m: any) => m.user_id);
+          const userIds = simpleMem.map((m: Omit<ProjectMember, 'profiles'>) => m.user_id);
           const { data: profs } = await supabase
             .from('profiles')
             .select('id, display_name')
             .in('id', userIds);
 
-          const profMap = new Map((profs || []).map((p: any) => [p.id, p]));
+          const profMap = new Map((profs || []).map((p: ProfileSummary) => [p.id, p]));
           setMembers(
-            simpleMem.map((m: any) => ({
+            simpleMem.map((m: Omit<ProjectMember, 'profiles'>) => ({
               ...m,
               profiles: profMap.get(m.user_id) || { id: m.user_id, display_name: 'Usuario' },
-            })) as any
+            })) as ProjectMember[]
           );
         }
       }
@@ -241,7 +241,7 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
               <p className="text-xs text-slate-500 italic py-2">Cargando integrantes...</p>
             ) : (
               members.map((m) => {
-                const displayName = (m.profiles as any)?.display_name || 'Usuario';
+                const displayName = m.profiles?.display_name || 'Usuario';
                 const isMemberOwner = m.role === 'owner';
                 return (
                   <div

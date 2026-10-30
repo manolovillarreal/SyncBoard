@@ -3,11 +3,25 @@ export type TaskPriority = 'low' | 'medium' | 'high';
 export type ProjectRole = 'owner' | 'member';
 export type InvitationStatus = 'pending' | 'accepted' | 'rejected' | 'revoked' | 'expired';
 
+// Acciones de auditoría registradas en activity_log (frontend, RPCs y Edge Function)
+export type ActivityAction =
+  | 'project_created'
+  | 'project_deleted'
+  | 'task_created'
+  | 'task_updated'
+  | 'task_status_changed'
+  | 'task_deleted'
+  | 'invitation_created'
+  | 'member_joined';
+
 export interface Profile {
   id: string;
   display_name: string;
   created_at: string;
 }
+
+// Perfil reducido devuelto por las consultas `profiles (id, display_name)`
+export type ProfileSummary = Pick<Profile, 'id' | 'display_name'>;
 
 export interface Project {
   id: string;
@@ -62,7 +76,7 @@ export interface ActivityLog {
   id: string;
   project_id: string;
   actor_id: string | null;
-  action: string;
+  action: ActivityAction;
   task_id: string | null;
   details: Record<string, any>;
   created_at: string;
