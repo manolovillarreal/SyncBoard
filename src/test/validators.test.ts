@@ -11,6 +11,26 @@ describe('Validators Unit Tests', () => {
     expect(isValidEmail('')).toBe(false);
   });
 
+  it('validates strict email syntax before inviting (Issue #17)', () => {
+    // Casos inválidos
+    expect(isValidEmail('usuario@dominio')).toBe(false); // sin TLD
+    expect(isValidEmail('usuario@dominio.')).toBe(false); // TLD vacío
+    expect(isValidEmail('usuario@@dominio.com')).toBe(false); // doble @
+    expect(isValidEmail('usuario@dominio.c')).toBe(false); // TLD de 1 carácter
+    expect(isValidEmail('usu ario@dominio.com')).toBe(false); // espacio
+    expect(isValidEmail('usuario,otro@dominio.com')).toBe(false); // coma
+    expect(isValidEmail('usuario@dominio,com')).toBe(false); // coma en dominio
+    expect(isValidEmail('usuario@dom!nio.com')).toBe(false); // carácter no permitido
+    expect(isValidEmail('.usuario@dominio.com')).toBe(false); // punto inicial
+    expect(isValidEmail('usuario..x@dominio.com')).toBe(false); // puntos consecutivos
+    expect(isValidEmail('@dominio.com')).toBe(false); // sin usuario
+
+    // Casos válidos
+    expect(isValidEmail('valido@universidad.edu')).toBe(true);
+    expect(isValidEmail('nombre.apellido+tag@sub.dominio.co')).toBe(true);
+    expect(isValidEmail('  Valido@Universidad.EDU  ')).toBe(true);
+  });
+
   it('normalizes email addresses to lowercase and trims spaces', () => {
     expect(normalizeEmail('  Estudiante@Universidad.EDU  ')).toBe('estudiante@universidad.edu');
   });

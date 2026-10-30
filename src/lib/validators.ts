@@ -1,9 +1,18 @@
 // Input validation and sanitization utilities
 
+// Estructura estricta: usuario @ dominio . TLD (mínimo 2 letras).
+// - Usuario: letras, dígitos y . _ % + - (sin puntos al inicio, al final ni consecutivos).
+// - Dominio: etiquetas de letras, dígitos y guiones (sin guion al inicio o al final), separadas por puntos.
+// - Se rechazan espacios, comas, dobles @ y cualquier otro carácter no permitido.
+const STRICT_EMAIL_RE =
+  /^[a-z0-9_%+-]+(?:\.[a-z0-9_%+-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/;
+
 export const isValidEmail = (email: string): boolean => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email.trim().toLowerCase());
+  return STRICT_EMAIL_RE.test(email.trim().toLowerCase());
 };
+
+export const EMAIL_FORMAT_ERROR =
+  'Formato de correo inválido: debe tener usuario, @, dominio y una extensión de al menos 2 letras (ej. usuario@universidad.edu), sin espacios ni comas.';
 
 export const normalizeEmail = (email: string): string => {
   return email.trim().toLowerCase();
