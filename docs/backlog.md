@@ -85,7 +85,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T41** | Atajo de teclado N en KanbanBoard para crear nueva tarea | Mejora | Baja | [Issue #41](https://github.com/manolovillarreal/SyncBoard/issues/41) | *Completada (PR #41)* |
 | **T42** | Alerta visual cuando una tarea no tiene responsable asignado | Ajuste | Baja | [Issue #42](https://github.com/manolovillarreal/SyncBoard/issues/42) | Jose Trujillo |
 | **T43** | Limpieza automática de formulario y foco en primer campo al abrir modales | Ajuste | Baja | [Issue #43](https://github.com/manolovillarreal/SyncBoard/issues/43) | Juan Fernando Melo Areiza |
-| **T44** | Contador y filtro rápido de Mis Tareas en KanbanBoard | Mejora | Baja | [Issue #44](https://github.com/manolovillarreal/SyncBoard/issues/44) | Luis Fernando Parra Castilla |
+| **T44** | Contador y filtro rápido de Mis Tareas en KanbanBoard | Mejora | Baja | [Issue #44](https://github.com/manolovillarreal/SyncBoard/issues/44) | Luis Fernando Parra Castilla — *En revisión (PR #67)* |
 | **T45** | Mensaje informativo en ReceivedInvitationsModal al aceptar la última invitación | Ajuste | Baja | [Issue #45](https://github.com/manolovillarreal/SyncBoard/issues/45) | Juan Fernando Melo Areiza |
 | **T46** | Detección de reconexión a internet con recarga automática de datos | Mejora | Media-baja | [Issue #46](https://github.com/manolovillarreal/SyncBoard/issues/46) | Simon Burgos |
 | **T47** | Tooltip explicativo en los badges de prioridad con guía de uso | Ajuste | Baja | [Issue #47](https://github.com/manolovillarreal/SyncBoard/issues/47) | Juan Sebastian Gonzalez Arcila |
