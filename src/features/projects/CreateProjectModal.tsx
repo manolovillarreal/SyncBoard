@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { validateProjectInput, sanitizeTitle } from '../../lib/validators';
-import { X, FolderPlus, AlertCircle } from 'lucide-react';
+import { X, FolderPlus, AlertCircle, Loader2 } from 'lucide-react';
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -23,6 +23,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setErrorMsg(null);
 
     const sanitizedName = sanitizeTitle(name);
@@ -63,7 +64,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
             <FolderPlus className="w-5 h-5" />
             <h3 className="text-base font-semibold text-slate-900">Crear Nuevo Proyecto</h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="text-slate-400 hover:text-slate-600 p-1 disabled:opacity-50"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -83,10 +88,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
             <input
               type="text"
               required
+              disabled={loading}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="ej. Taller 1: Sistemas Distribuidos"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -96,10 +102,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
             </label>
             <textarea
               rows={3}
+              disabled={loading}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Objetivos, entregables o temas del proyecto..."
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -108,16 +115,23 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium"
+              className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium shadow-sm transition disabled:opacity-50"
+              className="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Creando...' : 'Crear Proyecto'}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Creando proyecto...</span>
+                </>
+              ) : (
+                'Crear Proyecto'
+              )}
             </button>
           </div>
         </form>
