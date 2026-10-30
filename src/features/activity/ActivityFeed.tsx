@@ -2,11 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ActivityLog } from '../../types/database.types';
 import { formatDateTime, formatStatus } from '../../lib/formatters';
-import { Clock, PlusCircle, CheckCircle2, UserCheck, Trash2, Edit3, Mail } from 'lucide-react';
+import {
+  Clock,
+  PlusCircle,
+  CheckCircle2,
+  UserCheck,
+  Trash2,
+  Edit3,
+  Mail,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
+
+export const ACTIVITY_LOAD_ERROR_MESSAGE =
+  'No se pudo cargar el historial de actividad. Revisa tu conexión e inténtalo de nuevo.';
 
 export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   const fetchLogs = async () => {
     try {
@@ -29,12 +44,16 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
       if (!error && data) {
         setLogs(data as any);
       } else {
-        const { data: simpleLogs } = await supabase
+        const { data: simpleLogs, error: simpleError } = await supabase
           .from('activity_log')
           .select('id, project_id, actor_id, action, task_id, details, created_at')
           .eq('project_id', projectId)
           .order('created_at', { ascending: false })
           .limit(50);
+
+        // Si la consulta de respaldo también falla, el historial no se pudo cargar:
+        // antes este caso terminaba mostrando "sin actividad", lo cual era engañoso.
+        if (simpleError) throw simpleError;
 
         if (simpleLogs && simpleLogs.length > 0) {
           const actorIds = Array.from(new Set(simpleLogs.map((l: any) => l.actor_id).filter(Boolean)));
@@ -54,12 +73,36 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
           setLogs([]);
         }
       }
+      setError(null);
     } catch (err) {
       console.error('Error cargando actividad:', err);
+      setError(ACTIVITY_LOAD_ERROR_MESSAGE);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleRetry = async () => {
+    if (retrying) return;
+    setRetrying(true);
+    try {
+      await fetchLogs();
+    } finally {
+      setRetrying(false);
+    }
+  };
+
+  const retryButton = (
+    <button
+      type="button"
+      onClick={handleRetry}
+      disabled={retrying}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-red-200 text-red-700 hover:bg-red-100 rounded-lg text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      <RefreshCw className={`w-3.5 h-3.5 ${retrying ? 'animate-spin' : ''}`} />
+      <span>{retrying ? 'Reintentando...' : 'Reintentar'}</span>
+    </button>
+  );
 
   useEffect(() => {
     fetchLogs();
@@ -178,6 +221,19 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
     return <div className="py-6 text-center text-xs text-slate-400">Cargando registro de actividad...</div>;
   }
 
+  if (error && logs.length === 0) {
+    return (
+      <div
+        role="alert"
+        className="py-8 px-5 flex flex-col items-center gap-3 text-center bg-red-50 border border-red-200 rounded-2xl"
+      >
+        <AlertCircle className="w-6 h-6 text-red-500" />
+        <p className="text-xs text-red-700 font-medium">{error}</p>
+        {retryButton}
+      </div>
+    );
+  }
+
   if (logs.length === 0) {
     return (
       <div className="py-8 text-center text-xs text-slate-400">
@@ -188,6 +244,20 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
 
   return (
     <div className="flow-root bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+      {error && (
+        // Falló una recarga (p. ej. disparada por Realtime) pero ya había datos:
+        // se conservan los eventos anteriores y se avisa al usuario.
+        <div
+          role="alert"
+          className="mb-4 p-3 flex flex-col sm:flex-row sm:items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg"
+        >
+          <div className="flex items-center gap-2 flex-1">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+          {retryButton}
+        </div>
+      )}
       <ul className="-mb-8">
         {logs.map((log, logIdx) => {
           const { icon, text } = renderActionInfo(log);
