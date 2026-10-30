@@ -112,24 +112,30 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
                   {project.description || 'Sin descripción detallada.'}
                 </p>
 
-                {taskStats && (
-                  <div
-                    className="flex flex-wrap items-center gap-1.5 mt-4"
-                    data-testid={`project-metrics-${project.id}`}
-                  >
-                    {METRIC_STATUSES.map(({ status, chipClass }) => (
-                      <span
-                        key={status}
-                        className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${chipClass}`}
-                      >
-                        <span>{formatStatus(status)}</span>
-                        <span className="font-bold">
-                          {(taskStats[project.id] ?? emptyTaskStatusCounts())[status]}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {taskStats && (() => {
+                  const counts = taskStats[project.id] ?? emptyTaskStatusCounts();
+                  const total = counts.pending + counts.in_progress + counts.completed;
+                  return (
+                    <div
+                      className="flex flex-wrap items-center gap-1.5 mt-4"
+                      data-testid={`project-metrics-${project.id}`}
+                    >
+                      {total === 0 ? (
+                        <span className="text-[11px] font-semibold text-slate-400">0 tareas</span>
+                      ) : (
+                        METRIC_STATUSES.map(({ status, chipClass }) => (
+                          <span
+                            key={status}
+                            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${chipClass}`}
+                          >
+                            <span>{formatStatus(status)}</span>
+                            <span className="font-bold">{counts[status]}</span>
+                          </span>
+                        ))
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-teal-600 group-hover:text-teal-700">

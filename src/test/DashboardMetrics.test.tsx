@@ -19,13 +19,16 @@ vi.mock('../lib/supabase', () => ({
   supabase: { from: (table: string) => mockFrom(table) },
 }));
 
+// El mock devuelve siempre el mismo objeto: un `user` nuevo en cada render reiniciaría la carga del Dashboard
+const mockAuth = vi.hoisted(() => ({
+  user: { id: 'user-1', email: 'test@syncboard.edu' },
+  profile: { id: 'user-1', display_name: 'Usuario Test', created_at: '2026-10-01T00:00:00Z' },
+  session: null,
+  loading: false,
+}));
+
 vi.mock('../features/auth/AuthContext', () => ({
-  useAuth: () => ({
-    user: { id: 'user-1', email: 'test@syncboard.edu' },
-    profile: { id: 'user-1', display_name: 'Usuario Test', created_at: '2026-10-01T00:00:00Z' },
-    session: null,
-    loading: false,
-  }),
+  useAuth: () => mockAuth,
 }));
 
 const projectRow = (id: string, name: string, createdAt: string) => ({
@@ -80,11 +83,10 @@ describe('DashboardPage - Resumen de métricas de tareas por columna - Issue #36
     expect(within(metrics1).getByText('En progreso').nextSibling).toHaveTextContent('1');
     expect(within(metrics1).getByText('Completada').nextSibling).toHaveTextContent('1');
 
-    // Proyecto sin tareas: los tres contadores en cero
+    // Proyecto nuevo (sin tareas): se muestra '0 tareas' en lugar de los chips
     const metrics2 = screen.getByTestId('project-metrics-proj-2');
-    expect(within(metrics2).getByText('Pendiente').nextSibling).toHaveTextContent('0');
-    expect(within(metrics2).getByText('En progreso').nextSibling).toHaveTextContent('0');
-    expect(within(metrics2).getByText('Completada').nextSibling).toHaveTextContent('0');
+    expect(within(metrics2).getByText('0 tareas')).toBeInTheDocument();
+    expect(within(metrics2).queryByText('Pendiente')).not.toBeInTheDocument();
 
     expect(mockInTasks).toHaveBeenCalledWith('project_id', ['proj-1', 'proj-2']);
   });
