@@ -64,7 +64,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T20** | Manejo de evento DELETE en canal Realtime de actividad | Mejora | Baja | [Issue #20](https://github.com/manolovillarreal/SyncBoard/issues/20) | Thomas Hoyos Carmona |
 | **T21** | Resincronización automática de tareas al recuperar foco de ventana | Ajuste | Baja | [Issue #21](https://github.com/manolovillarreal/SyncBoard/issues/21) | Thomas Hoyos Carmona |
 | **T22** | Resaltado visual transitorio de tarjeta actualizada vía Realtime | Mejora | Media-baja | [Issue #22](https://github.com/manolovillarreal/SyncBoard/issues/22) | Esteban Puerta Mejia |
-| **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo |
+| **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo — *En revisión (PR pendiente)* |
 | **T24** | Detección y notificación limpia de sesión expirada | Mejora | Baja | [Issue #24](https://github.com/manolovillarreal/SyncBoard/issues/24) | Esteban Puerta Mejia |
 | **T25** | Pruebas unitarias para formateadores de fechas y prioridades | Ajuste | Baja | [Issue #25](https://github.com/manolovillarreal/SyncBoard/issues/25) | Sebastian Pedroza Gallardo |
 | **T26** | Pruebas unitarias exhaustivas de validadores de entrada | Ajuste | Baja | [Issue #26](https://github.com/manolovillarreal/SyncBoard/issues/26) | Santiago Velasco Mosquero |
