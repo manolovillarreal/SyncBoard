@@ -45,7 +45,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T01** | Botón para copiar identificador del proyecto al portapapeles | Ajuste | Baja | [Issue #1](https://github.com/manolovillarreal/SyncBoard/issues/1) | *Reserva (Sin asignar)* |
 | **T02** | Contador de caracteres restantes en título y descripción de tarea | Ajuste | Baja | [Issue #2](https://github.com/manolovillarreal/SyncBoard/issues/2) | *Reserva (Sin asignar)* |
 | **T03** | Indicador de días de retraso en tareas vencidas | Ajuste | Baja | [Issue #3](https://github.com/manolovillarreal/SyncBoard/issues/3) | Jakeline Avila Verbel |
-| **T04** | Filtro de búsqueda por texto en títulos de tareas del tablero | Mejora | Baja | [Issue #4](https://github.com/manolovillarreal/SyncBoard/issues/4) | Luis Fernando Parra Castilla |
+| **T04** | Filtro de búsqueda por texto en títulos de tareas del tablero | Mejora | Baja | [Issue #4](https://github.com/manolovillarreal/SyncBoard/issues/4) | Luis Fernando Parra Castilla — *En revisión (PR #68)* |
 | **T05** | Estado vacío contextual cuando los filtros no devuelven tareas | Ajuste | Baja | [Issue #5](https://github.com/manolovillarreal/SyncBoard/issues/5) | Sergio Nicolas Fonseca Nino |
 | **T06** | Formateador de tiempo relativo en historial de actividad | Ajuste | Baja | [Issue #6](https://github.com/manolovillarreal/SyncBoard/issues/6) | Luisa Fernanda Garcia Gallego |
 | **T07** | Soporte de tecla Escape para cerrar modales de proyecto y tareas | Ajuste | Baja | [Issue #7](https://github.com/manolovillarreal/SyncBoard/issues/7) | Diego Molina Julian |
