@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { isValidEmail } from '../../lib/validators';
+import { isValidEmail, EMAIL_FORMAT_ERROR } from '../../lib/validators';
 import { X, UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface InviteMemberModalProps {
@@ -28,8 +28,9 @@ export const InviteMemberModal: React.FC<InviteMemberModalProps> = ({
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    // Validación previa: si el formato no es válido no se llama a la Edge Function
     if (!isValidEmail(email)) {
-      setErrorMsg('Introduce un correo electrónico válido.');
+      setErrorMsg(EMAIL_FORMAT_ERROR);
       return;
     }
 
@@ -102,7 +103,9 @@ export const InviteMemberModal: React.FC<InviteMemberModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleInvite} className="space-y-4">
+        {/* noValidate: la validación nativa del navegador acepta "usuario@dominio";
+            se usa isValidEmail para mostrar un mensaje específico */}
+        <form onSubmit={handleInvite} noValidate className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
               Correo del Estudiante o Integrante
