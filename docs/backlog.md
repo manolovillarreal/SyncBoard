@@ -59,12 +59,12 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T15** | Sanitización y recorte de espacios múltiples en nombres y títulos | Ajuste | Baja | [Issue #15](https://github.com/manolovillarreal/SyncBoard/issues/15) | Esteban Puerta Mejia |
 | **T16** | Modal de confirmación accesible al remover integrantes del equipo | Mejora | Baja | [Issue #16](https://github.com/manolovillarreal/SyncBoard/issues/16) | Jakeline Avila Verbel |
 | **T17** | Validación estricta de sintaxis de correo antes de invitar | Ajuste | Baja | [Issue #17](https://github.com/manolovillarreal/SyncBoard/issues/17) | Sergio Nicolas Fonseca Nino |
-| **T18** | Botón de reintento ante error de carga en historial de actividad | Ajuste | Baja | [Issue #18](https://github.com/manolovillarreal/SyncBoard/issues/18) | Sebastian Pedroza Gallardo |
+| **T18** | Botón de reintento ante error de carga en historial de actividad | Ajuste | Baja | [Issue #18](https://github.com/manolovillarreal/SyncBoard/issues/18) | Sebastian Pedroza Gallardo — *En revisión (PR pendiente)* |
 | **T19** | Indicador de estado de conexión Supabase Realtime en Navbar | Mejora | Media-baja | [Issue #19](https://github.com/manolovillarreal/SyncBoard/issues/19) | Felipe Gonzalez Tovar |
 | **T20** | Manejo de evento DELETE en canal Realtime de actividad | Mejora | Baja | [Issue #20](https://github.com/manolovillarreal/SyncBoard/issues/20) | Thomas Hoyos Carmona |
 | **T21** | Resincronización automática de tareas al recuperar foco de ventana | Ajuste | Baja | [Issue #21](https://github.com/manolovillarreal/SyncBoard/issues/21) | Thomas Hoyos Carmona |
 | **T22** | Resaltado visual transitorio de tarjeta actualizada vía Realtime | Mejora | Media-baja | [Issue #22](https://github.com/manolovillarreal/SyncBoard/issues/22) | Esteban Puerta Mejia |
-| **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo |
+| **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo — *En revisión (PR pendiente)* |
 | **T24** | Detección y notificación limpia de sesión expirada | Mejora | Baja | [Issue #24](https://github.com/manolovillarreal/SyncBoard/issues/24) | Esteban Puerta Mejia |
 | **T25** | Pruebas unitarias para formateadores de fechas y prioridades | Ajuste | Baja | [Issue #25](https://github.com/manolovillarreal/SyncBoard/issues/25) | Sebastian Pedroza Gallardo |
 | **T26** | Pruebas unitarias exhaustivas de validadores de entrada | Ajuste | Baja | [Issue #26](https://github.com/manolovillarreal/SyncBoard/issues/26) | Santiago Velasco Mosquero |

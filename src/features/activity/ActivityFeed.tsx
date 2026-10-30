@@ -1,12 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ActivityLog } from '../../types/database.types';
 import { formatDateTime, formatStatus } from '../../lib/formatters';
-import { Clock, PlusCircle, CheckCircle2, UserCheck, Trash2, Edit3, Mail } from 'lucide-react';
+import {
+  Clock,
+  PlusCircle,
+  CheckCircle2,
+  UserCheck,
+  Trash2,
+  Edit3,
+  Mail,
+  AlertCircle,
+  RefreshCw,
+  Filter,
+} from 'lucide-react';
+
+export const ACTIVITY_LOAD_ERROR_MESSAGE =
+  'No se pudo cargar el historial de actividad. Revisa tu conexión e inténtalo de nuevo.';
+
+export const ALL_ACTIONS = 'all';
+
+/** Tipos de acción que registra la plataforma, con su etiqueta para el filtro (Issue #23). */
+export const ACTIVITY_ACTION_FILTERS: { value: string; label: string }[] = [
+  { value: 'task_created', label: 'Tareas creadas' },
+  { value: 'task_updated', label: 'Tareas editadas' },
+  { value: 'task_status_changed', label: 'Cambios de estado' },
+  { value: 'task_deleted', label: 'Tareas eliminadas' },
+  { value: 'invitation_created', label: 'Invitaciones enviadas' },
+  { value: 'member_joined', label: 'Nuevos integrantes' },
+  { value: 'project_created', label: 'Creación del proyecto' },
+];
 
 export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
+  const [actionFilter, setActionFilter] = useState<string>(ALL_ACTIONS);
+
+  // Al cambiar de proyecto se vuelve a mostrar todo el historial.
+  useEffect(() => {
+    setActionFilter(ALL_ACTIONS);
+  }, [projectId]);
+
+  const actionCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    logs.forEach((log) => counts.set(log.action, (counts.get(log.action) || 0) + 1));
+    return counts;
+  }, [logs]);
+
+  const filteredLogs = useMemo(
+    () => (actionFilter === ALL_ACTIONS ? logs : logs.filter((log) => log.action === actionFilter)),
+    [logs, actionFilter]
+  );
 
   const fetchLogs = async () => {
     try {
@@ -29,12 +75,16 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
       if (!error && data) {
         setLogs(data as any);
       } else {
-        const { data: simpleLogs } = await supabase
+        const { data: simpleLogs, error: simpleError } = await supabase
           .from('activity_log')
           .select('id, project_id, actor_id, action, task_id, details, created_at')
           .eq('project_id', projectId)
           .order('created_at', { ascending: false })
           .limit(50);
+
+        // Si la consulta de respaldo también falla, el historial no se pudo cargar:
+        // antes este caso terminaba mostrando "sin actividad", lo cual era engañoso.
+        if (simpleError) throw simpleError;
 
         if (simpleLogs && simpleLogs.length > 0) {
           const actorIds = Array.from(new Set(simpleLogs.map((l: any) => l.actor_id).filter(Boolean)));
@@ -54,12 +104,36 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
           setLogs([]);
         }
       }
+      setError(null);
     } catch (err) {
       console.error('Error cargando actividad:', err);
+      setError(ACTIVITY_LOAD_ERROR_MESSAGE);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleRetry = async () => {
+    if (retrying) return;
+    setRetrying(true);
+    try {
+      await fetchLogs();
+    } finally {
+      setRetrying(false);
+    }
+  };
+
+  const retryButton = (
+    <button
+      type="button"
+      onClick={handleRetry}
+      disabled={retrying}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-red-200 text-red-700 hover:bg-red-100 rounded-lg text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      <RefreshCw className={`w-3.5 h-3.5 ${retrying ? 'animate-spin' : ''}`} />
+      <span>{retrying ? 'Reintentando...' : 'Reintentar'}</span>
+    </button>
+  );
 
   useEffect(() => {
     fetchLogs();
@@ -178,6 +252,19 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
     return <div className="py-6 text-center text-xs text-slate-400">Cargando registro de actividad...</div>;
   }
 
+  if (error && logs.length === 0) {
+    return (
+      <div
+        role="alert"
+        className="py-8 px-5 flex flex-col items-center gap-3 text-center bg-red-50 border border-red-200 rounded-2xl"
+      >
+        <AlertCircle className="w-6 h-6 text-red-500" />
+        <p className="text-xs text-red-700 font-medium">{error}</p>
+        {retryButton}
+      </div>
+    );
+  }
+
   if (logs.length === 0) {
     return (
       <div className="py-8 text-center text-xs text-slate-400">
@@ -188,36 +275,90 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
 
   return (
     <div className="flow-root bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-      <ul className="-mb-8">
-        {logs.map((log, logIdx) => {
-          const { icon, text } = renderActionInfo(log);
-          const isLast = logIdx === logs.length - 1;
+      {error && (
+        // Falló una recarga (p. ej. disparada por Realtime) pero ya había datos:
+        // se conservan los eventos anteriores y se avisa al usuario.
+        <div
+          role="alert"
+          className="mb-4 p-3 flex flex-col sm:flex-row sm:items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg"
+        >
+          <div className="flex items-center gap-2 flex-1">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+          {retryButton}
+        </div>
+      )}
+      <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <label
+          htmlFor="activity-action-filter"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600"
+        >
+          <Filter className="w-3.5 h-3.5" />
+          <span>Filtrar por tipo de acción</span>
+        </label>
+        <div className="flex items-center gap-2">
+          <select
+            id="activity-action-filter"
+            value={actionFilter}
+            onChange={(e) => setActionFilter(e.target.value)}
+            className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-500"
+          >
+            <option value={ALL_ACTIONS}>Todas las acciones ({logs.length})</option>
+            {ACTIVITY_ACTION_FILTERS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label} ({actionCounts.get(value) || 0})
+              </option>
+            ))}
+          </select>
+          {actionFilter !== ALL_ACTIONS && (
+            <button
+              type="button"
+              onClick={() => setActionFilter(ALL_ACTIONS)}
+              className="text-xs text-teal-700 hover:text-teal-800 font-semibold"
+            >
+              Limpiar filtro
+            </button>
+          )}
+        </div>
+      </div>
 
-          return (
-            <li key={log.id}>
-              <div className="relative pb-8">
-                {!isLast && (
-                  <span
-                    className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-200"
-                    aria-hidden="true"
-                  />
-                )}
-                <div className="relative flex space-x-3 items-start">
-                  <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center ring-4 ring-white">
-                    {icon}
-                  </div>
-                  <div className="flex-1 min-w-0 pt-1">
-                    <p className="text-xs text-slate-600">{text}</p>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">
-                      {formatDateTime(log.created_at)}
-                    </span>
+      {filteredLogs.length === 0 ? (
+        <p className="py-6 text-center text-xs text-slate-400">
+          No hay eventos de este tipo entre los más recientes del proyecto.
+        </p>
+      ) : (
+        <ul className="-mb-8">
+          {filteredLogs.map((log, logIdx) => {
+            const { icon, text } = renderActionInfo(log);
+            const isLast = logIdx === filteredLogs.length - 1;
+
+            return (
+              <li key={log.id}>
+                <div className="relative pb-8">
+                  {!isLast && (
+                    <span
+                      className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-200"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="relative flex space-x-3 items-start">
+                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center ring-4 ring-white">
+                      {icon}
+                    </div>
+                    <div className="flex-1 min-w-0 pt-1">
+                      <p className="text-xs text-slate-600">{text}</p>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        {formatDateTime(log.created_at)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 };
