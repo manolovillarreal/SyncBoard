@@ -4,7 +4,8 @@ import { Task, TaskStatus, ProjectMember } from '../../types/database.types';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskModal } from './TaskModal';
 import { useAuth } from '../auth/AuthContext';
-import { Filter, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { sortTasks, TaskSortOption, TASK_SORT_LABELS } from '../../lib/taskSorting';
+import { Filter, AlertCircle, RefreshCw, Plus, ArrowUpDown } from 'lucide-react';
 
 interface KanbanBoardProps {
   projectId: string;
@@ -20,6 +21,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   // Filters
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+
+  // Sorting
+  const [sortOption, setSortOption] = useState<TaskSortOption>('recent');
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -187,9 +191,13 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
     return true;
   });
 
-  const pendingTasks = filteredTasks.filter((t) => t.status === 'pending');
-  const inProgressTasks = filteredTasks.filter((t) => t.status === 'in_progress');
-  const completedTasks = filteredTasks.filter((t) => t.status === 'completed');
+  // Se ordena en cada render a partir del estado actual, por lo que el orden
+  // se mantiene ante cambios locales y eventos Realtime.
+  const sortedTasks = sortTasks(filteredTasks, sortOption);
+
+  const pendingTasks = sortedTasks.filter((t) => t.status === 'pending');
+  const inProgressTasks = sortedTasks.filter((t) => t.status === 'in_progress');
+  const completedTasks = sortedTasks.filter((t) => t.status === 'completed');
 
   return (
     <div className="space-y-4">
@@ -229,6 +237,23 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
               <option value="high">Alta</option>
               <option value="medium">Media</option>
               <option value="low">Baja</option>
+            </select>
+          </div>
+
+          {/* Ordenamiento */}
+          <div className="flex items-center gap-1.5">
+            <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
+            <select
+              aria-label="Ordenar tareas"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as TaskSortOption)}
+              className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-500"
+            >
+              {(Object.keys(TASK_SORT_LABELS) as TaskSortOption[]).map((option) => (
+                <option key={option} value={option}>
+                  {TASK_SORT_LABELS[option]}
+                </option>
+              ))}
             </select>
           </div>
 
