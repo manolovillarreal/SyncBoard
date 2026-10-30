@@ -13,6 +13,10 @@ interface KanbanColumnProps {
   onDeleteTask: (taskId: string) => void;
   onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
   colorScheme: 'slate' | 'amber' | 'emerald';
+  /** Total de tareas de la columna antes de aplicar filtros (por defecto, tasks.length). */
+  totalTasksCount?: number;
+  /** Limpia los filtros activos del tablero. */
+  onClearFilters?: () => void;
 }
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -25,7 +29,12 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onDeleteTask,
   onStatusChange,
   colorScheme,
+  totalTasksCount,
+  onClearFilters,
 }) => {
+  // La columna tiene tareas registradas, pero los filtros activos las ocultan todas
+  const hiddenByFilters = tasks.length === 0 && (totalTasksCount ?? 0) > 0;
+
   const memberMap = new Map<string, string>();
   members.forEach((m) => {
     memberMap.set(m.user_id, (m.profiles as any)?.display_name || 'Integrante');
@@ -77,7 +86,20 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
       {/* Lista de tarjetas */}
       <div className="flex-1 space-y-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1">
-        {tasks.length === 0 ? (
+        {hiddenByFilters ? (
+          <div className="text-center py-8 px-4 border border-dashed border-slate-300 rounded-xl bg-white/40">
+            <p className="text-xs text-slate-500">No hay tareas que coincidan con los filtros aplicados</p>
+            {onClearFilters && (
+              <button
+                type="button"
+                onClick={onClearFilters}
+                className="mt-2 text-xs text-teal-600 hover:text-teal-700 font-semibold underline"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+        ) : tasks.length === 0 ? (
           <div className="text-center py-8 px-4 border border-dashed border-slate-300 rounded-xl bg-white/40">
             <p className="text-xs text-slate-400">Sin tareas en esta etapa</p>
             <button

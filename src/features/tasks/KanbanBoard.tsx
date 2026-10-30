@@ -191,6 +191,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
   const inProgressTasks = filteredTasks.filter((t) => t.status === 'in_progress');
   const completedTasks = filteredTasks.filter((t) => t.status === 'completed');
 
+  // Totales por columna sin filtros, para distinguir "columna vacía" de "filtros sin resultados"
+  const countByStatus = (status: TaskStatus) => tasks.filter((t) => t.status === status).length;
+
+  const handleClearFilters = () => {
+    setAssigneeFilter('all');
+    setPriorityFilter('all');
+  };
+
   return (
     <div className="space-y-4">
       {/* Barra de Filtros y Acciones */}
@@ -234,10 +242,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
 
           {(assigneeFilter !== 'all' || priorityFilter !== 'all') && (
             <button
-              onClick={() => {
-                setAssigneeFilter('all');
-                setPriorityFilter('all');
-              }}
+              onClick={handleClearFilters}
               className="text-xs text-teal-600 hover:text-teal-700 font-semibold underline px-1"
             >
               Limpiar filtros
@@ -283,6 +288,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
           <KanbanColumn
             status="pending"
+            totalTasksCount={countByStatus('pending')}
+            onClearFilters={handleClearFilters}
             title="Pendiente"
             tasks={pendingTasks}
             members={members}
@@ -295,6 +302,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
 
           <KanbanColumn
             status="in_progress"
+            totalTasksCount={countByStatus('in_progress')}
+            onClearFilters={handleClearFilters}
             title="En progreso"
             tasks={inProgressTasks}
             members={members}
@@ -307,6 +316,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
 
           <KanbanColumn
             status="completed"
+            totalTasksCount={countByStatus('completed')}
+            onClearFilters={handleClearFilters}
             title="Completada"
             tasks={completedTasks}
             members={members}
