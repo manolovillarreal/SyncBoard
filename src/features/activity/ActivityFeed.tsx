@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ActivityLog } from '../../types/database.types';
-import { formatDateTime, formatStatus } from '../../lib/formatters';
+import { formatDateTime, formatRelativeTime, formatStatus } from '../../lib/formatters';
 import { Clock, PlusCircle, CheckCircle2, UserCheck, Trash2, Edit3, Mail } from 'lucide-react';
 
 export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => {
@@ -208,9 +208,13 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
                     <p className="text-xs text-slate-600">{text}</p>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">
-                      {formatDateTime(log.created_at)}
-                    </span>
+                    <time
+                      dateTime={log.created_at}
+                      title={formatDateTime(log.created_at)}
+                      className="text-[10px] text-slate-400 block mt-0.5"
+                    >
+                      {formatRelativeTime(log.created_at)}
+                    </time>
                   </div>
                 </div>
               </div>

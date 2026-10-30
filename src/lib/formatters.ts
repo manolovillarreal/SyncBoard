@@ -67,3 +67,25 @@ export const formatDateTime = (dateString: string | null): string => {
     return dateString;
   }
 };
+
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+
+const pluralize = (value: number, singular: string, plural: string): string =>
+  `hace ${value} ${value === 1 ? singular : plural}`;
+
+export const formatRelativeTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return dateString;
+
+  // Diferencias negativas (relojes desfasados entre cliente y servidor) se tratan como "ahora".
+  const diffMs = Math.max(0, Date.now() - date.getTime());
+
+  if (diffMs < MINUTE_MS) return 'hace un momento';
+  if (diffMs < HOUR_MS) return pluralize(Math.floor(diffMs / MINUTE_MS), 'minuto', 'minutos');
+  if (diffMs < DAY_MS) return pluralize(Math.floor(diffMs / HOUR_MS), 'hora', 'horas');
+  if (diffMs < 30 * DAY_MS) return pluralize(Math.floor(diffMs / DAY_MS), 'día', 'días');
+
+  return formatDate(dateString);
+};
