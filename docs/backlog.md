@@ -67,7 +67,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T23** | Filtro por tipo de acción en el historial de eventos | Funcionalidad | Media-baja | [Issue #23](https://github.com/manolovillarreal/SyncBoard/issues/23) | Sebastian Pedroza Gallardo |
 | **T24** | Detección y notificación limpia de sesión expirada | Mejora | Baja | [Issue #24](https://github.com/manolovillarreal/SyncBoard/issues/24) | Esteban Puerta Mejia |
 | **T25** | Pruebas unitarias para formateadores de fechas y prioridades | Ajuste | Baja | [Issue #25](https://github.com/manolovillarreal/SyncBoard/issues/25) | Sebastian Pedroza Gallardo |
-| **T26** | Pruebas unitarias exhaustivas de validadores de entrada | Ajuste | Baja | [Issue #26](https://github.com/manolovillarreal/SyncBoard/issues/26) | Santiago Velasco Mosquero |
+| **T26** | Pruebas unitarias exhaustivas de validadores de entrada | Ajuste | Baja | [Issue #26](https://github.com/manolovillarreal/SyncBoard/issues/26) | Santiago Velasco Mosquero — *En revisión* |
 | **T27** | Prueba de componente para la columna Kanban con Testing Library | Mejora | Media-baja | [Issue #27](https://github.com/manolovillarreal/SyncBoard/issues/27) | Felipe Gonzalez Tovar |
 | **T28** | Prueba de componente para validación del modal de tareas | Mejora | Media-baja | [Issue #28](https://github.com/manolovillarreal/SyncBoard/issues/28) | Juan Fernando Melo Areiza |
 | **T29** | Prueba de componente para la lista de proyectos y estado vacío | Mejora | Baja | [Issue #29](https://github.com/manolovillarreal/SyncBoard/issues/29) | Santiago Velasco Mosquero |
