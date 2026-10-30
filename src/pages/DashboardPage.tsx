@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { Project } from '../types/database.types';
+import { countTasksByProject, TaskStatusCounts } from '../lib/taskMetrics';
 import { useAuth } from '../features/auth/AuthContext';
 import { ProjectsList } from '../features/projects/ProjectsList';
 import { CreateProjectModal } from '../features/projects/CreateProjectModal';
@@ -19,6 +20,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 }) => {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [taskStats, setTaskStats] = useState<Record<string, TaskStatusCounts> | null>(null);
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -59,6 +61,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       );
 
       setProjects(activeProjects);
+
+      // Métricas de tareas por columna para cada proyecto (no bloquea la lista si falla)
+      try {
+        if (activeProjects.length === 0) {
+          setTaskStats({});
+        } else {
+          const { data: tasksData, error: tasksError } = await supabase
+            .from('tasks')
+            .select('project_id, status')
+            .in(
+              'project_id',
+              activeProjects.map((p) => p.id)
+            );
+
+          if (tasksError) throw tasksError;
+          setTaskStats(countTasksByProject((tasksData as any[]) || []));
+        }
+      } catch (statsErr) {
+        console.error('Error cargando métricas de tareas:', statsErr);
+        setTaskStats(null);
+      }
     } catch (err) {
       console.error('Error cargando proyectos del usuario:', err);
     } finally {
@@ -102,6 +125,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* Lista de Proyectos */}
       <ProjectsList
         projects={projects}
+        taskStats={taskStats}
         loading={loading}
         onSelectProject={onSelectProject}
         onOpenCreateModal={() => setCreateModalOpen(true)}
