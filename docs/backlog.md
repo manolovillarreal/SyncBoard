@@ -90,5 +90,5 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T46** | Detección de reconexión a internet con recarga automática de datos | Mejora | Media-baja | [Issue #46](https://github.com/manolovillarreal/SyncBoard/issues/46) | Simon Burgos |
 | **T47** | Tooltip explicativo en los badges de prioridad con guía de uso | Ajuste | Baja | [Issue #47](https://github.com/manolovillarreal/SyncBoard/issues/47) | Juan Sebastian Gonzalez Arcila |
 | **T48** | Prueba de componente para ReceivedInvitationsModal evaluando aceptar y rechazar | Mejora | Media-baja | [Issue #48](https://github.com/manolovillarreal/SyncBoard/issues/48) | Diego Molina Julian |
-| **T49** | Prueba de componente para ProjectSettingsModal evaluando edición | Mejora | Media-baja | [Issue #49](https://github.com/manolovillarreal/SyncBoard/issues/49) | Santiago Velasco Mosquero |
+| **T49** | Prueba de componente para ProjectSettingsModal evaluando edición | Mejora | Media-baja | [Issue #49](https://github.com/manolovillarreal/SyncBoard/issues/49) | Santiago Velasco Mosquero — *En revisión* |
 | **T50** | Enlace al repositorio GitHub y documentación en el menú de usuario | Ajuste | Baja | [Issue #50](https://github.com/manolovillarreal/SyncBoard/issues/50) | Juan Sebastian Lopez Martinez |
