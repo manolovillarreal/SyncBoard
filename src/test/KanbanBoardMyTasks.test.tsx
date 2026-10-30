@@ -83,6 +83,7 @@ describe('KanbanBoard - Contador y filtro rápido "Mis tareas" - Issue #44', () 
     });
 
     expect(screen.getByTestId('my-tasks-count')).toHaveTextContent('2');
+    expect(screen.getByRole('button', { name: /mis tareas/i })).toHaveTextContent('Mis tareas (2)');
   });
 
   it('al activar el filtro solo muestra las tareas del usuario y al desactivarlo las restaura', async () => {

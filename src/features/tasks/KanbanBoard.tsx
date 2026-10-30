@@ -249,14 +249,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
             }`}
           >
             <User className="w-3.5 h-3.5" />
-            <span>Mis tareas</span>
-            <span
-              data-testid="my-tasks-count"
-              className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                myTasksOnly ? 'bg-white/25 text-white' : 'bg-slate-200 text-slate-700'
-              }`}
-            >
-              {myTasksCount}
+            <span>
+              Mis tareas (<span data-testid="my-tasks-count">{myTasksCount}</span>)
             </span>
           </button>
 
