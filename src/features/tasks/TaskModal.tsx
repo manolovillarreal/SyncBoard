@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Task, TaskPriority, TaskStatus, ProjectMember } from '../../types/database.types';
-import { validateTaskInput, sanitizeTitle } from '../../lib/validators';
+import { validateTaskInput, sanitizeTitle, getTodayDateString } from '../../lib/validators';
 import { useAuth } from '../auth/AuthContext';
 import { X, CheckSquare, AlertCircle } from 'lucide-react';
 
@@ -62,7 +62,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     setErrorMsg(null);
 
     const sanitizedTitle = sanitizeTitle(title);
-    const validation = validateTaskInput(sanitizedTitle, status, priority);
+    const validation = validateTaskInput(
+      sanitizedTitle,
+      status,
+      priority,
+      dueDate,
+      !!taskToEdit,
+      taskToEdit?.due_date
+    );
     if (!validation.valid) {
       setErrorMsg(validation.error || 'Datos de tarea inválidos.');
       return;
@@ -131,6 +138,11 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setLoading(false);
     }
   };
+
+  const today = getTodayDateString();
+  const minDate = taskToEdit?.due_date && taskToEdit.due_date < today
+    ? taskToEdit.due_date
+    : today;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
@@ -244,6 +256,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
+                min={minDate}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
