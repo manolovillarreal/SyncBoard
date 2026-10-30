@@ -1,7 +1,46 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { useAuth } from '../features/auth/AuthContext';
 import { isValidEmail } from '../lib/validators';
-import { LayoutDashboard, Lock, Mail, User, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { LayoutDashboard, Lock, Mail, User, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+
+interface PasswordInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  /** Nombre del campo usado en el aria-label del botón (ej. "contraseña") */
+  fieldName: string;
+}
+
+// Input de contraseña con botón para alternar su visibilidad (Issue #38)
+const PasswordInput: React.FC<PasswordInputProps> = ({ value, onChange, fieldName }) => {
+  const [visible, setVisible] = useState(false);
+  const inputId = useId();
+
+  return (
+    <div className="relative">
+      <Lock className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
+      <input
+        id={inputId}
+        type={visible ? 'text' : 'password'}
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="••••••••"
+        className="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-controls={inputId}
+        aria-pressed={visible}
+        aria-label={visible ? `Ocultar ${fieldName}` : `Mostrar ${fieldName}`}
+        title={visible ? `Ocultar ${fieldName}` : `Mostrar ${fieldName}`}
+        className="absolute right-2 top-1.5 p-1 text-slate-400 hover:text-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+      >
+        {visible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+      </button>
+    </div>
+  );
+};
 
 export const AuthPage: React.FC = () => {
   const { signIn, signUp, resetPassword } = useAuth();
@@ -197,17 +236,7 @@ export const AuthPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Contraseña
                 </label>
-                <div className="relative">
-                  <Lock className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  />
-                </div>
+                <PasswordInput value={password} onChange={setPassword} fieldName="contraseña" />
               </div>
 
               <button
@@ -261,34 +290,18 @@ export const AuthPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Contraseña (mínimo 6 caracteres)
                 </label>
-                <div className="relative">
-                  <Lock className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  />
-                </div>
+                <PasswordInput value={password} onChange={setPassword} fieldName="contraseña" />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Confirmar Contraseña
                 </label>
-                <div className="relative">
-                  <Lock className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  <input
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  />
-                </div>
+                <PasswordInput
+                  value={confirmPassword}
+                  onChange={setConfirmPassword}
+                  fieldName="confirmación de contraseña"
+                />
               </div>
 
               <button
