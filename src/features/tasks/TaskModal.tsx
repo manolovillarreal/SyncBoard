@@ -225,7 +225,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               >
                 <option value="">Sin asignar</option>
                 {members.map((m) => {
-                  const name = (m.profiles as any)?.display_name || 'Integrante';
+                  const name = m.profiles?.display_name || 'Integrante';
                   return (
                     <option key={m.user_id} value={m.user_id}>
                       {name} {m.user_id === user?.id ? '(Tú)' : ''}

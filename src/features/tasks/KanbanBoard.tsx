@@ -212,7 +212,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
               <option value="unassigned">Sin asignar</option>
               {members.map((m) => (
                 <option key={m.user_id} value={m.user_id}>
-                  {(m.profiles as any)?.display_name || 'Integrante'}
+                  {m.profiles?.display_name || 'Integrante'}
                 </option>
               ))}
             </select>

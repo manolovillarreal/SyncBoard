@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { Project, ProjectMember } from '../types/database.types';
+import { Project, ProjectMember, ProfileSummary } from '../types/database.types';
 import { useAuth } from '../features/auth/AuthContext';
 import { KanbanBoard } from '../features/tasks/KanbanBoard';
 import { ActivityFeed } from '../features/activity/ActivityFeed';
@@ -61,18 +61,18 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId,
           .eq('project_id', projectId);
 
         if (simpleMem && simpleMem.length > 0) {
-          const userIds = simpleMem.map((m: any) => m.user_id);
+          const userIds = simpleMem.map((m: Omit<ProjectMember, 'profiles'>) => m.user_id);
           const { data: profs } = await supabase
             .from('profiles')
             .select('id, display_name')
             .in('id', userIds);
 
-          const profMap = new Map((profs || []).map((p: any) => [p.id, p]));
+          const profMap = new Map((profs || []).map((p: ProfileSummary) => [p.id, p]));
           setMembers(
-            simpleMem.map((m: any) => ({
+            simpleMem.map((m: Omit<ProjectMember, 'profiles'>) => ({
               ...m,
               profiles: profMap.get(m.user_id) || { id: m.user_id, display_name: 'Usuario' },
-            })) as any
+            })) as ProjectMember[]
           );
         } else {
           setMembers([]);
@@ -178,7 +178,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId,
           {/* Mini avatares de integrantes */}
           <div className="hidden sm:flex items-center -space-x-2 overflow-hidden py-1">
             {members.slice(0, 4).map((m) => {
-              const name = (m.profiles as any)?.display_name || 'U';
+              const name = m.profiles?.display_name || 'U';
               return (
                 <div
                   key={m.user_id}

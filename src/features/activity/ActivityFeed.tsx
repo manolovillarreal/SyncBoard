@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { ActivityLog } from '../../types/database.types';
+import { ActivityLog, ProfileSummary } from '../../types/database.types';
 import { formatDateTime, formatStatus } from '../../lib/formatters';
 import { Clock, PlusCircle, CheckCircle2, UserCheck, Trash2, Edit3, Mail } from 'lucide-react';
 
@@ -37,18 +37,20 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
           .limit(50);
 
         if (simpleLogs && simpleLogs.length > 0) {
-          const actorIds = Array.from(new Set(simpleLogs.map((l: any) => l.actor_id).filter(Boolean)));
+          const actorIds = Array.from(
+            new Set(simpleLogs.map((l: Omit<ActivityLog, 'profiles'>) => l.actor_id).filter(Boolean))
+          );
           const { data: profs } = await supabase
             .from('profiles')
             .select('id, display_name')
             .in('id', actorIds);
 
-          const profMap = new Map((profs || []).map((p: any) => [p.id, p]));
+          const profMap = new Map((profs || []).map((p: ProfileSummary) => [p.id, p]));
           setLogs(
-            simpleLogs.map((l: any) => ({
+            simpleLogs.map((l: Omit<ActivityLog, 'profiles'>) => ({
               ...l,
               profiles: l.actor_id ? profMap.get(l.actor_id) || null : null,
-            })) as any
+            })) as ActivityLog[]
           );
         } else {
           setLogs([]);
@@ -87,7 +89,7 @@ export const ActivityFeed: React.FC<{ projectId: string }> = ({ projectId }) => 
   }, [projectId]);
 
   const renderActionInfo = (log: ActivityLog) => {
-    const actorName = (log.profiles as any)?.display_name || 'Sistema';
+    const actorName = log.profiles?.display_name || 'Sistema';
     const details = log.details || {};
 
     switch (log.action) {

@@ -28,7 +28,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 }) => {
   const memberMap = new Map<string, string>();
   members.forEach((m) => {
-    memberMap.set(m.user_id, (m.profiles as any)?.display_name || 'Integrante');
+    memberMap.set(m.user_id, m.profiles?.display_name || 'Integrante');
   });
 
   const getHeaderClasses = () => {
