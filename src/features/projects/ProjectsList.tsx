@@ -1,18 +1,27 @@
 import React from 'react';
-import { Project } from '../../types/database.types';
+import { Project, TaskStatus } from '../../types/database.types';
 import { useAuth } from '../auth/AuthContext';
-import { formatDate } from '../../lib/formatters';
+import { formatDate, formatStatus } from '../../lib/formatters';
+import { emptyTaskStatusCounts, TaskStatusCounts } from '../../lib/taskMetrics';
 import { Folder, Plus, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
 
 interface ProjectsListProps {
   projects: Project[];
+  taskStats?: Record<string, TaskStatusCounts> | null;
   loading: boolean;
   onSelectProject: (projectId: string) => void;
   onOpenCreateModal: () => void;
 }
 
+const METRIC_STATUSES: { status: TaskStatus; chipClass: string }[] = [
+  { status: 'pending', chipClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  { status: 'in_progress', chipClass: 'bg-amber-100 text-amber-800 border-amber-200' },
+  { status: 'completed', chipClass: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+];
+
 export const ProjectsList: React.FC<ProjectsListProps> = ({
   projects,
+  taskStats = null,
   loading,
   onSelectProject,
   onOpenCreateModal,
@@ -102,6 +111,31 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
                 <p className="text-xs text-slate-500 line-clamp-2 min-h-[2rem]">
                   {project.description || 'Sin descripción detallada.'}
                 </p>
+
+                {taskStats && (() => {
+                  const counts = taskStats[project.id] ?? emptyTaskStatusCounts();
+                  const total = counts.pending + counts.in_progress + counts.completed;
+                  return (
+                    <div
+                      className="flex flex-wrap items-center gap-1.5 mt-4"
+                      data-testid={`project-metrics-${project.id}`}
+                    >
+                      {total === 0 ? (
+                        <span className="text-[11px] font-semibold text-slate-400">0 tareas</span>
+                      ) : (
+                        METRIC_STATUSES.map(({ status, chipClass }) => (
+                          <span
+                            key={status}
+                            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${chipClass}`}
+                          >
+                            <span>{formatStatus(status)}</span>
+                            <span className="font-bold">{counts[status]}</span>
+                          </span>
+                        ))
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-teal-600 group-hover:text-teal-700">
