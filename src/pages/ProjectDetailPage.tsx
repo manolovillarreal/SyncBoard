@@ -5,7 +5,9 @@ import { useAuth } from '../features/auth/AuthContext';
 import { KanbanBoard } from '../features/tasks/KanbanBoard';
 import { ActivityFeed } from '../features/activity/ActivityFeed';
 import { ProjectSettingsModal } from '../features/projects/ProjectSettingsModal';
+import { ProjectProgress } from '../features/projects/ProjectProgress';
 import { InviteMemberModal } from '../features/invitations/InviteMemberModal';
+import { TaskProgress } from '../lib/taskProgress';
 import { ArrowLeft, Settings, UserPlus, Trello, Activity, ShieldCheck } from 'lucide-react';
 
 interface ProjectDetailPageProps {
@@ -19,6 +21,11 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId,
   const [members, setMembers] = useState<ProjectMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [taskProgress, setTaskProgress] = useState<TaskProgress>({
+    completed: 0,
+    total: 0,
+    percentage: 0,
+  });
 
   const [activeTab, setActiveTab] = useState<'kanban' | 'activity'>('kanban');
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -171,6 +178,8 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId,
           {project.description && (
             <p className="text-xs text-slate-500 mt-1 max-w-2xl">{project.description}</p>
           )}
+
+          <ProjectProgress progress={taskProgress} />
         </div>
 
         {/* Acciones del Proyecto e Integrantes */}
@@ -247,7 +256,11 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId,
 
       {/* Contenido según pestaña activa */}
       {activeTab === 'kanban' ? (
-        <KanbanBoard projectId={project.id} members={members} />
+        <KanbanBoard
+          projectId={project.id}
+          members={members}
+          onProgressChange={setTaskProgress}
+        />
       ) : (
         <ActivityFeed projectId={project.id} />
       )}

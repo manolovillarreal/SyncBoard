@@ -74,7 +74,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T30** | Verificación estricta de tipos TypeScript en modelos de datos | Ajuste | Baja | [Issue #30](https://github.com/manolovillarreal/SyncBoard/issues/30) | Juan Sebastian Lopez Martinez |
 | **T31** | Atajo de teclado Ctrl+Enter para guardar tareas en modal | Ajuste | Baja | [Issue #31](https://github.com/manolovillarreal/SyncBoard/issues/31) | Jakeline Avila Verbel |
 | **T32** | Avatar con iniciales y color determinista para integrantes | Ajuste | Baja | [Issue #32](https://github.com/manolovillarreal/SyncBoard/issues/32) | Jose Trujillo |
-| **T33** | Indicador de progreso del proyecto (% de tareas completadas) | Mejora | Baja | [Issue #33](https://github.com/manolovillarreal/SyncBoard/issues/33) | Thomas Hoyos Carmona |
+| **T33** | Indicador de progreso del proyecto (% de tareas completadas) | Mejora | Baja | [Issue #33](https://github.com/manolovillarreal/SyncBoard/issues/33) | Thomas Hoyos Carmona (En revisión) |
 | **T34** | Filtro de proyectos por nombre en el buscador de Dashboard | Ajuste | Baja | [Issue #34](https://github.com/manolovillarreal/SyncBoard/issues/34) | Jose Trujillo |
 | **T35** | Confirmación visual al copiar correo de invitación en modal | Ajuste | Baja | [Issue #35](https://github.com/manolovillarreal/SyncBoard/issues/35) | Juan Sebastian Gonzalez Arcila |
 | **T36** | Resumen de métricas de tareas por columna en tarjetas de Dashboard | Mejora | Baja | [Issue #36](https://github.com/manolovillarreal/SyncBoard/issues/36) | Luis Fernando Parra Castilla |

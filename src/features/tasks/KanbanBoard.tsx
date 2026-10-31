@@ -5,13 +5,19 @@ import { KanbanColumn } from './KanbanColumn';
 import { TaskModal } from './TaskModal';
 import { useAuth } from '../auth/AuthContext';
 import { Filter, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { calculateTaskProgress, TaskProgress } from '../../lib/taskProgress';
 
 interface KanbanBoardProps {
   projectId: string;
   members: ProjectMember[];
+  onProgressChange?: (progress: TaskProgress) => void;
 }
 
-export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) => {
+export const KanbanBoard: React.FC<KanbanBoardProps> = ({
+  projectId,
+  members,
+  onProgressChange,
+}) => {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +83,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, members }) 
       supabase.removeChannel(channel);
     };
   }, [projectId, fetchTasks]);
+
+  useEffect(() => {
+    onProgressChange?.(calculateTaskProgress(tasks));
+  }, [tasks, onProgressChange]);
 
   const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
     const originalTasks = [...tasks];
